@@ -1,0 +1,14 @@
+@import "./tailwind.css";
+
+$body-bg-color: #F7F7FF;
+$footer-bg-color: #0a0a0a;
+$footer-text-color: #fff;
+body {
+  background-color: $body-bg-color;
+}
+
+footer {
+  height: 60px;
+  color: $footer-text-color;
+  background-color: $footer-bg-color;
+}
