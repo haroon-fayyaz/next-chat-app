@@ -3,13 +3,10 @@
 import { redirect } from "next/navigation"
 import Signin from "@/components/Signin"
 import { useSession } from "next-auth/react"
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
 function Login() {
-  const session = useSession()
-
-  if (session?.data?.user) {
-    redirect("/")
-  }
+  useAuthRedirect(false);
 
   return <Signin />
 }
