@@ -1,5 +1,11 @@
-import { hashSync, compareSync } from "bcryptjs"
+import CredentialsProvider from "next-auth/providers/credentials"
+import GoogleProvider from "next-auth/providers/google"
+import { connectToDatabase } from "@/lib/db"
 import User from "@/models/User"
+import { AUTH_PROVIDERS } from "@/utils/constants"
+import { findUser, registerUser } from "@/services/userService"
+import { hashSync, compareSync } from "bcryptjs"
+
 export const hashPassword = (password: string) => hashSync(password, 12)
 
 export const verifyPassword = (password: string, hashedPassword: string) => compareSync(password, hashedPassword)

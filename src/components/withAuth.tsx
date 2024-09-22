@@ -1,6 +1,6 @@
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { redirect } from "next/navigation"
+import { authOptions } from "@/lib/auth"
+import { getServerSession } from "next-auth"
 
 export default async function withAuth(Component) {
   return async function AuthenticatedComponent() {
