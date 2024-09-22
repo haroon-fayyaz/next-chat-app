@@ -1,11 +1,13 @@
+import { Box, Container, Typography, TextField, InputAdornment, TextFieldProps } from "@mui/material"
 import Link from "next/link"
-import { Box, Container, Typography, TextField, InputAdornment } from "@mui/material"
+import React from "react"
 
-export interface IAuthLayoutProps extends React.Component {
+export interface IAuthLayoutProps {
   type: "Sign In" | "Sign Up"
+  children: React.ReactNode
 }
 
-interface InputFieldProps extends TextFieldProps {
+interface InputFieldProps extends Omit<TextFieldProps, "icon"> {
   icon: React.ReactNode
 }
 
@@ -23,7 +25,7 @@ const SIGN_UP_FORM_OPTS = {
   navLinkText: "Signin now"
 }
 
-export const AuthLayout = ({ type, children }: IAuthLayoutProps) => {
+export const AuthLayout: React.FC<IAuthLayoutProps> = ({ type, children }) => {
   const FORM_OPTS = type === "Sign In" ? SIGN_IN_FORM_OPTS : SIGN_UP_FORM_OPTS
 
   return (

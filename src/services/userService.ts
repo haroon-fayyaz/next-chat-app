@@ -1,6 +1,7 @@
 import { hashPassword } from "@/lib/auth"
 import User from "@/models/User"
 import { AUTH_PROVIDERS } from "@/utils/constants"
+import { AuthProvider } from "@/utils/types"
 
 export const findUser = async ({ by = "email", value }: { by?: "id" | "email"; value: string }) =>
   User.findOne({ [by]: value })
@@ -12,9 +13,9 @@ export const registerUser = ({
   authProvider
 }: {
   email: string
-  name: string
+  name?: string
   password?: string
-  authProvider: keyof typeof AUTH_PROVIDERS
+  authProvider: AuthProvider
 }) => {
   const newUser = new User({
     email,

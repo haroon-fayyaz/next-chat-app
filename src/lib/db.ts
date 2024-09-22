@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 
 const connectToDatabase = async () => {
-  if (mongoose.connection.readyState >= 1) {
+  if (!process.env.MONGODB_URI || mongoose.connection.readyState >= 1) {
     return
   }
 

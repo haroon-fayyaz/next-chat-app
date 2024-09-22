@@ -1,9 +1,15 @@
 import Footer from "@/components/Footer"
 import { getServerSession } from "next-auth/next"
 import { redirect } from "next/navigation"
-import withAuth from "@/components/withAuth"
+import { authOptions } from "@/lib/auth"
 
-function Home() {
+export default async function Home() {
+  const session = await getServerSession(authOptions)
+
+  if (!session) {
+    redirect("/login")
+  }
+
   return (
     <div className="flex flex-col h-screen justify-between">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start"></main>
@@ -11,5 +17,3 @@ function Home() {
     </div>
   )
 }
-
-export default withAuth(Home)

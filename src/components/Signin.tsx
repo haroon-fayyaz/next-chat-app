@@ -7,6 +7,7 @@ import Lock from "@mui/icons-material/Lock"
 import Link from "next/link"
 import { useFormik } from "formik"
 import * as Yup from "yup"
+import { get } from 'radash'
 import { AuthLayout, InputField } from "./AuthLayout"
 
 function Signin() {
@@ -46,7 +47,7 @@ function Signin() {
                 placeholder={field}
                 required
                 type={lowerField}
-                value={formik.values[lowerField]}
+                value={get(formik.values, lowerField)}
                 onChange={e => formik.setFieldValue(lowerField, e.target.value)}
                 icon={field === "Email" ? <Email /> : <Lock />}
               />

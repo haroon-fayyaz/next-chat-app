@@ -1,16 +1,27 @@
-import mongoose from "mongoose"
 import { AUTH_PROVIDERS } from "@/utils/constants"
+import { AuthProvider } from "@/utils/types"
+import mongoose, { Schema, Document } from "mongoose"
 
-const userSchema = new mongoose.Schema({
+interface IUser {
+  name?: string
+  email: string
+  password?: string
+  authProvider: AuthProvider
+  createdAt?: Date
+}
+
+interface IUserDocument extends IUser, Document {}
+
+const userSchema = new Schema<IUserDocument>({
   name: { type: String },
   email: { type: String, required: true, unique: true },
   password: {
     type: String,
     validate: {
-      validator: function (v) {
+      validator: function (v: string) {
         return this.authProvider !== AUTH_PROVIDERS.CREDENTIALS || (v && v.length > 0)
       },
-      message: props => `${props.value} is not a valid password!`
+      message: (props: { value: string }) => `${props.value} is not a valid password!`
     }
   },
   authProvider: {
@@ -24,6 +35,7 @@ const userSchema = new mongoose.Schema({
   }
 })
 
-const User = mongoose.models?.User || mongoose.model("User", userSchema)
+const User = mongoose.models?.User || mongoose.model<IUserDocument>("User", userSchema)
 
 export default User
+export type { IUserDocument }
