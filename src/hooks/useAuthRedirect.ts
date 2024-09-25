@@ -1,20 +1,21 @@
-import { useEffect } from "react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
+import { useAuth } from "@/components/AuthProvider";
 
 export const useAuthRedirect = (isProtected: boolean) => {
-  const { data: session, status } = useSession();
+  const { user, status } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (status === "loading") return;
 
-    if (isProtected && !session) {
+    if (isProtected && !user) {
       router.push("/login");
-    } else if (!isProtected && session) {
+    } else if (!isProtected && user) {
       router.push("/");
     }
-  }, [session, status, isProtected, router]);
+  }, [user, status, isProtected, router]);
 
-  return { session, status };
+  return { user, status };
 };

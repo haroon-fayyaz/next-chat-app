@@ -1,6 +1,7 @@
-import Footer from "@/components/Footer"
-import { getServerSession } from "next-auth/next"
 import { redirect } from "next/navigation"
+import { getServerSession } from "next-auth/next"
+
+import Footer from "@/components/Footer"
 import { authOptions } from "@/lib/auth"
 
 export default async function Home() {

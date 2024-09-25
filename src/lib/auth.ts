@@ -1,11 +1,12 @@
+import { compareSync, hashSync } from "bcryptjs"
 import { AuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
+
 import { connectToDatabase } from "@/lib/db"
-import User, { IUserDocument } from "@/models/User"
-import { AUTH_PROVIDERS } from "@/utils/constants"
+import { IUserDocument } from "@/models/User"
 import { findUser, registerUser } from "@/services/userService"
-import { hashSync, compareSync } from "bcryptjs"
+import { AUTH_PROVIDERS } from "@/utils/constants"
 
 export const hashPassword = (password: string) => hashSync(password, 12)
 
@@ -34,12 +35,36 @@ export const authOptions: AuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials || !credentials.email || !credentials.password) return null
-        await connectToDatabase()
 
+        await connectToDatabase()
         const user = await findUser({ by: "email", value: credentials.email })
         if (user && verifyPassword(credentials.password, user.password)) return getTokenPayload(user)
 
         return null
+      }
+    }),
+    CredentialsProvider({
+      id: "register",
+      name: "register",
+      credentials: {
+        name: { label: "Name", type: "text" },
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        try {
+          if (!credentials || !credentials.email || !credentials.password) return null
+          await connectToDatabase()
+
+          const user = await findUser({ by: "email", value: credentials.email })
+          if (user) throw new Error("User with this email already exists")
+
+          const newUser = await registerUser({ ...credentials, authProvider: AUTH_PROVIDERS.CREDENTIALS })
+
+          return getTokenPayload(newUser)
+        } catch (error) {
+          return Promise.reject(error)
+        }
       }
     }),
     GoogleProvider({
@@ -53,10 +78,13 @@ export const authOptions: AuthOptions = {
     })
   ],
   callbacks: {
-    async signIn({ account, profile }) {
+    async signIn(opts) {
       try {
+
+        const { account, profile } = opts
+
+        if ([AUTH_PROVIDERS.CREDENTIALS, "register"].includes(account.provider)) return true
         if (!account || !profile) return false
-        if (account.provider === AUTH_PROVIDERS.CREDENTIALS) return true
 
         const { email, name } = profile
         if (!email) return false
@@ -65,13 +93,13 @@ export const authOptions: AuthOptions = {
 
         let user = await findUser({ by: "email", value: email })
         if (!user) user = await registerUser({ email, name, authProvider: account.provider })
-
         return true
-      } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error){
         return false
       }
     },
-    async session({ session, token, user }) {
+    async session({ session }) {
       if (!session?.user?.email) return Promise.reject("User not found")
 
       const dbUser = await findUser({ by: "email", value: session.user.email })

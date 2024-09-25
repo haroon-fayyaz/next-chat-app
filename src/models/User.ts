@@ -1,6 +1,7 @@
+import mongoose, { Document,Schema } from "mongoose"
+
 import { AUTH_PROVIDERS } from "@/utils/constants"
 import { AuthProvider } from "@/utils/types"
-import mongoose, { Schema, Document } from "mongoose"
 
 interface IUser {
   name?: string

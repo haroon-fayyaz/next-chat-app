@@ -1,6 +1,5 @@
 import { hashPassword } from "@/lib/auth"
 import User from "@/models/User"
-import { AUTH_PROVIDERS } from "@/utils/constants"
 import { AuthProvider } from "@/utils/types"
 
 export const findUser = async ({ by = "email", value }: { by?: "id" | "email"; value: string }) =>

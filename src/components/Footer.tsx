@@ -1,5 +1,6 @@
-import { APP_NAME } from "@/utils/constants"
 import React from "react"
+
+import { APP_NAME } from "@/utils/constants"
 
 function Footer() {
   return (

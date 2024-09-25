@@ -1,5 +1,7 @@
 import "@/styles/globals.scss"
+
 import { Montserrat } from "next/font/google"
+
 import { AuthProvider } from "@/components/AuthProvider"
 
 const montserrat = Montserrat({

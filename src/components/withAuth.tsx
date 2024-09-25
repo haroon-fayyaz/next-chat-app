@@ -1,17 +1,21 @@
-import { ComponentType } from "react"
-import { redirect } from "next/navigation"
-import { authOptions } from "@/lib/auth"
-import { getServerSession } from "next-auth"
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
-export default function withAuth<P extends {}>(Component: ComponentType<P>) {
-  return async function AuthenticatedComponent(props: P) {
-    const session = await getServerSession(authOptions)
+import { useAuth } from './AuthProvider';
 
-    if (!session) {
-      redirect("/login")
-      return null
-    }
+export default function withAuth(WrappedComponent) {
+  // eslint-disable-next-line react/display-name
+  return (props) => {
+    const { user, status } = useAuth();
+    const router = useRouter();
 
-    return <Component {...props} />
-  }
+    useEffect(() => {
+      if (status === 'loading') return;
+
+      if (!user) router.push('/login');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user, status]);
+
+    return user ? <WrappedComponent {...props} /> : null;
+  };
 }
