@@ -1,6 +1,7 @@
 import "@/styles/globals.scss"
 
 import { Montserrat } from "next/font/google"
+import { Toaster } from "react-hot-toast"
 
 import { AuthProvider } from "@/components/AuthProvider"
 
@@ -17,6 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`antialiased ${montserrat.className}`}>
+        <Toaster position="top-right" />
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

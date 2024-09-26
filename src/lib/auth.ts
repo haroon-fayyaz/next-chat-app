@@ -38,9 +38,10 @@ export const authOptions: AuthOptions = {
 
         await connectToDatabase()
         const user = await findUser({ by: "email", value: credentials.email })
-        if (user && verifyPassword(credentials.password, user.password)) return getTokenPayload(user)
+        if (!user) throw new Error("No account with this email exist")
+        if (!verifyPassword(credentials.password, user.password)) throw new Error("Invalid Credentials")
 
-        return null
+        return getTokenPayload(user)
       }
     }),
     CredentialsProvider({
@@ -49,7 +50,7 @@ export const authOptions: AuthOptions = {
       credentials: {
         name: { label: "Name", type: "text" },
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
         try {
@@ -60,7 +61,6 @@ export const authOptions: AuthOptions = {
           if (user) throw new Error("User with this email already exists")
 
           const newUser = await registerUser({ ...credentials, authProvider: AUTH_PROVIDERS.CREDENTIALS })
-
           return getTokenPayload(newUser)
         } catch (error) {
           return Promise.reject(error)
@@ -80,10 +80,9 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async signIn(opts) {
       try {
-
         const { account, profile } = opts
 
-        if ([AUTH_PROVIDERS.CREDENTIALS, "register"].includes(account.provider)) return true
+        if ([AUTH_PROVIDERS.CREDENTIALS, AUTH_PROVIDERS.REGISTER].includes(account.provider)) return true
         if (!account || !profile) return false
 
         const { email, name } = profile
@@ -94,8 +93,8 @@ export const authOptions: AuthOptions = {
         let user = await findUser({ by: "email", value: email })
         if (!user) user = await registerUser({ email, name, authProvider: account.provider })
         return true
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (error){
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
         return false
       }
     },

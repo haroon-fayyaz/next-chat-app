@@ -1,11 +1,13 @@
 import Email from "@mui/icons-material/Email"
 import GoogleIcon from "@mui/icons-material/Google"
 import Lock from "@mui/icons-material/Lock"
-import { Box, Button, Grid, InputLabel,Typography } from "@mui/material"
+import { Box, Button, Grid, InputLabel, Typography } from "@mui/material"
 import { useFormik } from "formik"
 import { get } from "radash"
 import React from "react"
 import * as Yup from "yup"
+
+import { AUTH_PROVIDERS } from "@/utils/constants"
 
 import { useAuthentication } from "../hooks/useAuthentication"
 import { AuthLayout, InputField } from "./AuthLayout"
@@ -24,7 +26,7 @@ function Register() {
       email: Yup.string().email("Invalid email address").required("Required"),
       password: Yup.string().required("Required")
     }),
-    onSubmit: credentials => register({ credentials, provider: "register" })
+    onSubmit: credentials => register({ credentials, provider: AUTH_PROVIDERS.REGISTER })
   })
 
   return (
@@ -62,7 +64,7 @@ function Register() {
         </Grid>
         <Button
           type="button"
-          onClick={() => register({ provider: "google" })}
+          onClick={() => register({ provider: AUTH_PROVIDERS.GOOGLE })}
           fullWidth
           variant="outlined"
           startIcon={<GoogleIcon />}

@@ -3,14 +3,18 @@ import GoogleIcon from "@mui/icons-material/Google"
 import Lock from "@mui/icons-material/Lock"
 import { Box, Button, Grid, InputLabel, Typography } from "@mui/material"
 import { useFormik } from "formik"
-import { signIn } from "next-auth/react"
-import { get } from 'radash'
+import { get } from "radash"
 import React from "react"
 import * as Yup from "yup"
+
+import { useAuthentication } from "@/hooks/useAuthentication"
+import { AUTH_PROVIDERS } from "@/utils/constants"
 
 import { AuthLayout, InputField } from "./AuthLayout"
 
 function Signin() {
+  const { login } = useAuthentication()
+
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -20,14 +24,8 @@ function Signin() {
       email: Yup.string().email("Invalid email address").required("Required"),
       password: Yup.string().required("Required")
     }),
-    onSubmit: async values => {
-      const result = await signIn("credentials", {
-        redirect: false,
-        ...values
-      })
-      if (result?.error) {
-        console.error(result.error)
-      }
+    onSubmit: async credentials => {
+      await login({ credentials, provider: AUTH_PROVIDERS.CREDENTIALS })
     }
   })
 
@@ -66,7 +64,7 @@ function Signin() {
         </Grid>
         <Button
           type="button"
-          onClick={() => signIn("google")}
+          onClick={() => login({ provider: AUTH_PROVIDERS.GOOGLE })}
           fullWidth
           variant="outlined"
           startIcon={<GoogleIcon />}

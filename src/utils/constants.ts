@@ -1,4 +1,5 @@
 export const AUTH_PROVIDERS = {
+  REGISTER: "register",
   CREDENTIALS: "credentials",
   GOOGLE: "google"
 }

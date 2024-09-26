@@ -1,28 +1,34 @@
+import { redirect } from "next/navigation"
 import { signIn } from "next-auth/react"
+import toast from "react-hot-toast"
+
+import { AUTH_PROVIDERS } from "@/utils/constants"
+import { AuthenticationParams } from "@/utils/types"
 
 export const useAuthentication = () => {
-  async function login({
-    credentials,
-    provider
-  }: {
-    credentials?: { email: string; password: string }
-    provider: "credentials" | "google"
-  }) {
-    if (provider === "google") return await signIn("google")
+  function handleAuth({ credentials, provider }: AuthenticationParams) {
+    const opts = provider === AUTH_PROVIDERS.GOOGLE ? {} : { redirect: false, ...credentials }
 
-    await signIn(provider, { redirect: false, ...credentials })
+    signIn(provider, opts).then(params => {
+      const { ok, error } = params || {}
+      if (ok) {
+        if (provider === AUTH_PROVIDERS.REGISTER) toast.success("Account registered successfully")
+
+        setTimeout(() => {
+          redirect("/")
+        }, 1000)
+      } else if (error) {
+        toast.error(error)
+      }
+    })
   }
 
-  async function register({
-    credentials,
-    provider
-  }: {
-    credentials?: { name: string; email: string; password: string }
-    provider: "register" | "google"
-  }) {
-    if (provider === "google") return await signIn("google")
+  function login({ credentials, provider }: AuthenticationParams) {
+    return handleAuth({ credentials, provider })
+  }
 
-    await signIn(provider, { redirect: false, ...credentials })
+  function register({ credentials, provider }: AuthenticationParams) {
+    return handleAuth({ credentials, provider })
   }
 
   return { login, register }
