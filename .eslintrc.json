@@ -1,3 +1,10 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"]
+  "extends": ["next/core-web-vitals", "next/typescript", "prettier"],
+  "plugins": ["simple-import-sort"],
+  "rules": {
+    "import/order": "off", // Avoid conflicts with `simple-import-sort` plugin
+    "sort-imports": "off", // Avoid conflicts with `simple-import-sort` plugin
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error"
+  }
 }
